@@ -1,0 +1,58 @@
+<html>
+
+<body>
+  <h1>opencv bridge</h1>
+  <video width="755" height="560" autoplay="true" style="visibility: hidden; position:absolute" id="videoViewer">
+  </video>
+  <canvas id="canvForProcess" width="755" height="560" style="overflow: auto; visibility: hidden; position:absolute"></canvas>
+  <canvas id="canv" width="755" height="560" style="overflow: auto;"></canvas>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous"></script>
+  <script>
+    const vid = document.getElementById("videoViewer")
+
+    navigator.getMedia = (
+      navigator.getMedia ||
+      navigator.getUserMedia ||
+      navigator.webkitGetUserMedia ||
+      navigator.mozGetUserMedia ||
+      navigator.msGetUserMedia
+    );
+
+    navigator.getMedia({
+      video: true,
+      audio: false
+    }, function (stream) {
+      vid.srcObject = stream;
+      vid.play();
+
+      console.log("play")
+      const canv = document.getElementById('canv')
+      const canvForProcess = document.getElementById('canvForProcess')
+
+      setInterval(async () => {
+        canvForProcess.getContext('2d').drawImage(vid, 0, 0, 755, 560);
+        const base64 = canvForProcess.toDataURL()
+
+        $.ajax({
+          url: "/video",
+          data: base64,
+          method: 'post',
+          contentType: 'text/plain',
+          success: (data, stat, xhr) => {
+           
+          }
+        })
+      }, Math.floor(1000 / 30))
+    }, function (error) {
+      // an error occurred
+      console.log(error)
+    });
+
+
+
+  </script>
+</body>
+
+</html>
